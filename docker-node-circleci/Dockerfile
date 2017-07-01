@@ -21,14 +21,19 @@ RUN sudo apt-get update && \
 
 RUN sudo pip install awscli
 
+RUN sudo curl -o- -L https://yarnpkg.com/install.sh | bash
+
 RUN sudo curl -Ls https://convox.com/install/linux.zip > /tmp/convox.zip && \
   sudo unzip /tmp/convox.zip -d /usr/local/bin
 
-RUN sudo curl -o- -L https://yarnpkg.com/install.sh | bash
+RUN sudo mkdir -p /usr/local/removeBuildFromYaml
+WORKDIR /usr/local/removeBuildFromYaml
+COPY package.json /usr/local/removeBuildFromYaml/
+COPY yarn.lock /usr/local/removeBuildFromYaml/
+COPY removeBuildFromYaml.js /usr/local/removeBuildFromYaml/
+RUN sudo yarn
 
 COPY deployToECR.sh /usr/local/bin/
-
-COPY removeBuildFromYaml.js /usr/local/bin/
 
 RUN sudo chmod -R 0755 /usr/local/bin/*
 
